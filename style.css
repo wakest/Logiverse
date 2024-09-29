@@ -1,0 +1,101 @@
+/*
+ *  The Super Cool Tristie CSS
+*/
+
+:root {
+    --text-color: white;
+    --primary: #c02865;
+    --background: #4b0a24;
+}
+
+* {
+    box-sizing: border-box;
+    accent-color: var(--primary);
+}
+
+main h1:not([id=title]),
+main h2,
+main h3,
+main h4,
+main ol,
+main ul,
+main p {
+    margin: 0px;
+    padding-bottom: min(1em, 15px);
+}
+
+main hr {
+    margin-bottom: 1em;
+    border-color: var(--primary)
+}
+
+mark {
+    background-color: var(--primary);
+    padding-inline: .5em;
+    border-radius: 1em;
+}
+
+main h1#title {
+    margin: 0px;
+    padding-bottom: 0px;
+    & ~ hr:first-of-type {
+        border:transparent;
+    }
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-color);
+    font-family: "Gowun Batang", serif;
+    padding: 2em;
+    font-size: large;
+}
+
+main {
+    margin-inline: auto;
+    max-width: 40rem;
+    width: 100%;
+}
+
+img {
+    width: 100%;
+    border-radius: .5em;
+}
+
+a:link,
+a:visited {
+    color: unset;
+    padding-inline: .1em;
+    margin-inline: -.1em;
+    text-underline-offset: .1em;
+    font: bold;
+}
+
+a:hover,
+a:active {
+    color: black;
+    background-color: var(--primary);
+    font: bold;
+    text-decoration: none;
+    padding-inline: .1em;
+}
+
+/* Fonts */
+
+@font-face {
+    font-family: 'Gowun Batang';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/assets/fonts/GowunBatang.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Gowun Batang';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/assets/fonts/GowunBatangBold.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

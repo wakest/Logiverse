@@ -1,0 +1,10 @@
+defaults:
+  - values:
+      layout: default
+  -
+    scope:
+      type: "posts" # apply the value to all posts
+    values:
+      layout: posts
+      
+permalink: /tlog/:title
