@@ -5,7 +5,7 @@
 
 ---
 
-# The markdown [TLOG™](tlog)
+# The markdown [TLOG™](/tlog/tlog)
 
 These are my posts aren't they so cool. Filtering will be soon. Also heres a [link to the main page](/) in case you want it. The tag system for this website is very rudimentary and janky however it works so that's all that matters.
 
