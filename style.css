@@ -24,6 +24,10 @@ main p {
     padding-bottom: min(1em, 15px);
 }
 
+main img {
+    display: block;
+}
+
 main hr {
     margin-bottom: 1em;
     border-color: var(--primary)
@@ -38,8 +42,9 @@ mark {
 main h1#title {
     margin: 0px;
     padding-bottom: 0px;
-    & ~ hr:first-of-type {
-        border:transparent;
+
+    &~hr:first-of-type {
+        border: transparent;
     }
 }
 
