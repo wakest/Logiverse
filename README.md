@@ -1,3 +1,9 @@
-# Tristie's Website
+# Tristie's Nook
 
-Cool
+My name is Tristie and this is my repository for my website.
+
+Run dev server
+
+```bash
+jekyll serve --livereload
+```
