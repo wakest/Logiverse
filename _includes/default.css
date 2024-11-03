@@ -1,0 +1,80 @@
+/*
+ *  The Super Cool Tristie CSS
+*/
+
+:root {
+	--text-color: white;
+	--primary: #c02865;
+	--background: #4b0a24;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: var(--background);
+	color: var(--text-color);
+	font-family: "Gowun Batang", serif;
+	padding: clamp(1em, 2vw, 2em);
+	font-size: large;
+	accent-color: var(--primary);
+
+}
+
+main h1:not([id=title]),
+main h2,
+main h3,
+main h4,
+main ol,
+main ul,
+main p {
+	margin: 0px;
+	padding-bottom: min(1em, 15px);
+}
+
+main img {
+	display: block;
+}
+
+main hr {
+	margin-bottom: 1em;
+	border-color: var(--primary);
+}
+
+mark {
+	background-color: var(--primary);
+	padding-inline: .5em;
+	border-radius: 1em;
+}
+
+main {
+	margin-inline: auto;
+	max-width: 40rem;
+	width: 100%;
+}
+
+img.thumb {
+	width: 100%;
+	border-radius: .5em;
+}
+
+a:not(:has(img)) {
+	font: bold;
+	padding-inline: .1em;
+	text-underline-offset: .1em;
+	border-radius: 5px;
+
+	&:link,
+	&:visited {
+		color: var(--text-color);
+		margin-inline: -.1em;
+	}
+
+	&:hover,
+	&:active {
+		color: black;
+		background-color: var(--primary);
+		text-decoration: none;
+	}
+}

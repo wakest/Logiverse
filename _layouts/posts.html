@@ -6,10 +6,21 @@
 
 <h1 id="title">{{ page.title }}</h1>
 <p>
-    <small>{{page.date|date_to_string}}</small> 
+    <small>{{page.date|date_to_string}}</small>
 </p>
 
 <a href="/tlog">￩ all posts</a>
 <hr>
 
 {{ content }}
+
+<style>
+    main h1#title {
+        margin: 0px;
+        padding-bottom: 0px;
+
+        &~hr:first-of-type {
+            border: transparent;
+        }
+    }
+</style>

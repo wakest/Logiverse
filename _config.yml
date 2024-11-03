@@ -3,7 +3,7 @@ defaults:
       layout: default
   -
     scope:
-      type: "posts" # apply the value to all posts
+      type: "posts"
     values:
       layout: posts
       
