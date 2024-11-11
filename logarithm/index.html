@@ -1,7 +1,7 @@
 ---
 
-    title: Logarithm
-    description: Login Webview
+title: Logarithm
+description: Login Webview
 
 ---
 
@@ -49,18 +49,31 @@
 
     globalThis.config = config
     globalThis.fetchFeed = fetchFeed
+    globalThis.devMode = false
 
-    let posts = []
     let nameSet = []
 
     fetchFeed()
 
     async function fetchFeed() {
 
+        if (globalThis.devMode) {
+            loader.style.display = "none"
+            refresh.disabled = true
+            return pushPost({
+                author: "Tristie",
+                content: "> This is a *test* Post @Tristie",
+                gif: 'berd',
+                instance: 'todepond.com'
+            })
+        }
+
         refresh.disabled = true
         loader.style.display = "block"
 
         // TODO: Fetch all feeds in parallel using Promise.all
+
+        let posts = []
 
         for (let instance of config.instances) {
             let res = await fetch(instance.feed)
@@ -76,12 +89,15 @@
         posts = posts.sort((a, b) => b.created - a.created)
         nameSet = posts.map(p => p.author)
 
-        for (let post of posts) pushPost({
-            author: post.author,
-            content: post.content,
-            gif: post.gif,
-            instance: post.instance
-        })
+        for (let post of posts) {
+            // Don't allow posts to be hoisted with a fake date
+            if (new Date(post.created.getTime() - 86400000) < new Date()) pushPost({
+                author: post.author,
+                content: post.content,
+                gif: post.gif,
+                instance: post.instance
+            })
+        }
 
         loader.style.display = "none"
         refresh.disabled = false
@@ -97,7 +113,7 @@
             const image = post.querySelector('img')
             const instanceConfig = config.instances.find(i => i.name === instance)
 
-            if (('gifs' in instanceConfig) && instanceConfig.gifs[gif]) {
+            if (instanceConfig && ('gifs' in instanceConfig) && instanceConfig.gifs[gif]) {
                 image.src = instanceConfig.gifs[gif].src
                 image.alt = instanceConfig.gifs[gif].alt
                 image.style.display = 'block'
