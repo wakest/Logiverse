@@ -71,25 +71,29 @@ description: Login Webview
         refresh.disabled = true
         loader.style.display = "block"
 
-        // TODO: Fetch all feeds in parallel using Promise.all
-
         let posts = []
 
-        for (let instance of config.instances) {
-            let res = await fetch(instance.feed)
-            posts = [...posts, ...(await res.json().catch(() => ([]))).map(p => ({
-                content: p[0],
-                author: p[1],
-                created: new Date(p[2]),
-                gif: p[3],
-                instance: instance.name
-            }))]
+        // Fetch all feeds in parallel using Promise.all
+
+        const instances = await Promise.all(config.instances.map(({ feed, name }) => fetch(feed).then(res => res.json()).then(feed => ({ name, feed }))))
+
+        for (let instance of instances) {
+            for (let post of instance.feed){
+                posts.push({
+                    content: post[0],
+                    author: post[1],
+                    created: new Date(post[2]),
+                    gif: post[3],
+                    instance: instance.name
+                })
+            }
         }
 
         posts = posts.sort((a, b) => b.created - a.created)
         nameSet = posts.map(p => p.author)
 
         for (let post of posts) {
+
             // Don't allow posts to be hoisted with a fake date
             if (new Date(post.created.getTime() - 86400000) < new Date()) pushPost({
                 author: post.author,
