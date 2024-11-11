@@ -127,6 +127,8 @@ description: Login Webview
         posts = posts.sort((a, b) => b.date - a.date)
         nameSet = posts.map(p => p.author)
 
+        feed.innerHTML = ''
+
         for (let post of posts) {
 
             // Don't allow posts to be hoisted with a fake date
@@ -138,7 +140,7 @@ description: Login Webview
                 instance: post.instance
             })
         }
-
+        
         loader.style.display = "none"
         refresh.disabled = false
     }
