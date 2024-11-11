@@ -6,9 +6,13 @@ description: Login Webview
 ---
 
 <h1>Welcome to Logarithm</h1>
-<p>An unofficial webview for the <a href="https://todepond.com/lab/login">login</a> protocol (Which doesn't
-    exist)<br>(Certified scrappy fiddle) (All code available on <a
-        href="https://github.com/tristie/www/tree/main/logarithm">GitHub</a>)</p>
+<p>
+    An unofficial webview for the <a href="https://github.com/TodePond/Logiverse/">Logiverse</a> protocol that powers <a
+        href="https://todepond.com/lab/login">Login</a> by TodePond
+    <br>
+    <a href="https://github.com/tristie/www/tree/main/logarithm">Source Code</a> | <a
+        href="/logarithm/logiverse.js">Data Structure</a>
+</p>
 
 <!-- <form>
     <label>
@@ -25,9 +29,11 @@ description: Login Webview
 <header style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.8em;">
     <h2 style="padding-bottom: 0;">Feed</h2>
     <div>
-        <button id="refresh" onclick="fetchFeed()">&#x21bb; Refresh</button>
+        <button id="refresh" onclick="fetchFeed()">&#x21bb;</button>
     </div>
 </header>
+
+<hr style="opacity: 0.1;">
 
 <ul id="feed">
     <li id="loader">Loading...</li>
@@ -39,7 +45,8 @@ description: Login Webview
         <small style="opacity: 0.6;"></small>
         <span style="display: block; padding-block: .2em;">hello</span>
         <img style="display: none;">
-        <button onclick="alert('glad you like it babe')">like</button>
+        <button onclick="alert('glad you like it babe')">♥</button>
+        <hr>
     </li>
 </div>
 
@@ -60,12 +67,20 @@ description: Login Webview
         if (globalThis.devMode) {
             loader.style.display = "none"
             refresh.disabled = true
-            return pushPost({
+            pushPost({
                 author: "Tristie",
                 content: "> This is a *test* Post @Tristie",
                 gif: 'berd',
                 instance: 'todepond.com'
             })
+            pushPost({
+                author: "Tristie",
+                content: "test post 2",
+                gif: 'berd',
+                instance: 'todepond.com'
+            })
+
+            return
         }
 
         refresh.disabled = true
@@ -78,7 +93,7 @@ description: Login Webview
         const instances = await Promise.all(config.instances.map(({ feed, name }) => fetch(feed).then(res => res.json()).then(feed => ({ name, feed }))))
 
         for (let instance of instances) {
-            for (let post of instance.feed){
+            for (let post of instance.feed) {
                 posts.push({
                     content: post[0],
                     author: post[1],
@@ -278,6 +293,25 @@ description: Login Webview
 </script>
 
 <style>
+    button#refresh {
+        font-size: large;
+        background-color: transparent;
+        color: var(--text-color);
+        border: none;
+        cursor: pointer;
+        transition: color linear .1s;
+
+        &:hover {
+            color: var(--primary);
+        }
+
+        &[disabled],
+        &:disabled {
+            filter: brightness(0.5);
+            cursor: not-allowed;
+        }
+    }
+
     ul {
         list-style: none;
         padding: 0;
@@ -287,7 +321,6 @@ description: Login Webview
 
         li {
             display: block;
-            padding-bottom: 1em;
 
             h3 {
                 padding-bottom: 0;
@@ -315,6 +348,26 @@ description: Login Webview
                         background-color: var(--primary);
                     }
                 }
+            }
+
+            button {
+                color: var(--text-color);
+                border: none;
+                font-size: large;
+                background-color: transparent;
+                margin-top: .5em;
+                cursor: pointer;
+                transition: color linear .1s;
+
+                &:hover {
+                    color: var(--primary);
+                }
+            }
+
+            hr {
+                margin-top: 1em;
+                margin-bottom: 1em;
+                opacity: 0.1;
             }
         }
     }
