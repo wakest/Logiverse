@@ -59,7 +59,7 @@ img.thumb {
 	border-radius: .5em;
 }
 
-a:not(:has(img)) {
+a:not(:has(img)):not(.nolink) {
 	font: bold;
 	padding-inline: .1em;
 	text-underline-offset: .1em;

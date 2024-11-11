@@ -1,18 +1,30 @@
 export default {
     name: 'tristie.org',
-    feed: null
+    description: 'A webview for the Logiverse',
+    frontend: 'https://tristie.org/logarithm',
+    repository: 'https://github.com/tristie/www/tree/main/logarithm',
+
+    endpoints: {}
 }
 
 export const config = {
-    version: '0.0.0',
+    version: '0.0.1',
     instances: [
         {
             name: 'todepond.com',
-            feed: 'https://todepond-lablogingetusers.web.val.run',
-            update: 'https://todepond-labloginupdatestatus.web.val.run',
-            login: 'https://todepond-lablogin.web.val.run',
-            delete: 'https://todepond-lablogindeleteaccount.web.val.run',
-            ban: 'https://todepond-labloginbanuser.web.val.run',
+            admin: 'TodePond',
+
+            frontend: 'https://todepond.com/lab/login',
+            repository: 'https://github.com/TodePond/TodePondDotCom/tree/main/lab/login',
+
+            endpoints: {
+                feed: 'https://todepond-lablogingetusers.web.val.run',
+                update: 'https://todepond-labloginupdatestatus.web.val.run',
+                login: 'https://todepond-lablogin.web.val.run',
+                delete: 'https://todepond-lablogindeleteaccount.web.val.run',
+                ban: 'https://todepond-labloginbanuser.web.val.run',
+            },
+
             gifs: {
                 berd: {
                     src: 'https://www.todepond.com/image/berd.gif',
@@ -29,22 +41,57 @@ export const config = {
             }
         },
         {
-            name: "svenlaa.com",
-            feed: "https://svenlaa-lablogingetusers.web.val.run",
-            update: 'https://svenlaa-labloginupdatestatus.web.val.run',
-            login: 'https://svenlaa-lablogin.web.val.run',
-            delete: 'https://svenlaa-lablogindeleteaccount.web.val.run',
-            ban: 'https://svenlaa-labloginbanuser.web.val.run'
+            name: 'svenlaa.com',
+            admin: 'Svenlaa',
+
+            frontend: 'https://svenlaa.com/playground/loggo',
+            repository: 'https://github.com/Svenlaa/svenlaa.com/tree/main/playground/loggo',
+
+            endpoints: {
+                feed: "https://svenlaa-lablogingetusers.web.val.run",
+                update: 'https://svenlaa-labloginupdatestatus.web.val.run',
+                login: 'https://svenlaa-lablogin.web.val.run',
+                delete: 'https://svenlaa-lablogindeleteaccount.web.val.run',
+                ban: 'https://svenlaa-labloginbanuser.web.val.run'
+            }
         },
         {
             name: 'evolved.systems',
-            feed: 'https://evol-lablogingetusers.web.val.run',
-            update: 'https://evol-labloginupdatestatus.web.val.run',
-            
+            admin: 'evol',
+
+            frontend: 'https://evolved.systems/logon',
+
+            endpoints: {
+                feed: 'https://evol-lablogingetusers.web.val.run',
+                update: 'https://evol-labloginupdatestatus.web.val.run'
+            }
+
         },
         {
             name: 'rossilaz.xyz',
-            feed: 'https://mittzy-loginredux_getusers.web.val.run',
+            admin: 'Rosy',
+
+            frontend: 'https://login.rossilaz.xyz',
+            repository: 'https://github.com/RosyArts/login-redux',
+
+            endpoints: {
+                feed: 'https://mittzy-loginredux_getusers.web.val.run'
+            }
         },
+        {
+            name: 'cute-catgirl.github.io',
+            admin: 'Mae',
+
+            frontend: 'https://cute-catgirl.github.io/login/',
+            repository: 'https://github.com/cute-catgirl/login',
+
+            endpoints: {
+                feed: 'https://maemoon-lablogingetusers.web.val.run',
+                update: 'https://maemoon-labloginupdatestatus.web.val.run',
+                login: 'https://maemoon-lablogin.web.val.run',
+                delete: 'https://maemoon-lablogindeleteaccount.web.val.run',
+                ban: 'https://maemoon-labloginbanuser.web.val.run'
+            }
+        }
     ]
 }
