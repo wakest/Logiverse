@@ -222,7 +222,7 @@ description: Login Webview
         const possibleMentionRegex = /@(?<username>\w+(?:\s+\w+)*)(?:@(?<domain>[\w.-]+))?/g
         const possibleMentions = md.matchAll(possibleMentionRegex)
 
-        console.log(...possibleMentions)
+        console.log([...possibleMentions])
 
         // This sanitizes the HTML somehow
         let html = new Option(blockquote ? md.substring(2) : md).innerHTML
@@ -256,7 +256,7 @@ description: Login Webview
         * 
         */
 
-        mentionLoop: for (let [mention, mentionInstance] of possibleMentions?.map(({ groups }) => [groups?.username, groups?.domain]) || []) {
+        mentionLoop: for (let [mention, mentionInstance] of (possibleMentions || []).map(({ groups }) => [groups?.username, groups?.domain])) {
 
             if (mentionInstance && !config.instances.find(i => i.name === mentionInstance)) continue
             if (mention.includes(' ')) {
