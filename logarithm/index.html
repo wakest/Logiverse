@@ -214,7 +214,7 @@ description: Login Webview
 
     function getHtmlFromMarkdown(md, instance) {
 
-        if (md === "please add gifs") return '<img src="https://todepond.com/lab/login/gif.gif">'
+        if (md === "please add gifs") return '<img src="https://todepond.com/lab/login/gif.gif" style="max-width: 100%">'
 
         let blockquote = md.startsWith('> ')
         let mentionCount = ([...md.matchAll(' @')]).length + md.startsWith('@')
