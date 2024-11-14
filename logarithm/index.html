@@ -8,8 +8,7 @@ description: Login Webview
 <h1>
     Welcome to Logarithm
     <a href="https://github.com/tristie/www/tree/main/logarithm" class="nolink" target="_blank">
-        <svg viewBox="0 0 256 250" fill="#fff" xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid">
+        <svg viewBox="0 0 256 250" fill="#fff" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
             <title>Source Code</title>
             <path
                 d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0Zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931Zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66Zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08Zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27Zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622Zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868Zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403Z" />
@@ -78,27 +77,53 @@ description: Login Webview
     globalThis.fetchFeed = fetchFeed
     globalThis.devMode = false
 
-    let nameSet = []
+    let cachedNames = new Set()
+    let cachedNamesWithSpaces = new Set()
 
     fetchFeed()
 
     async function fetchFeed() {
 
         if (globalThis.devMode) {
+
+            // Used for development don't mind this
+
             loader.style.display = "none"
             refresh.disabled = true
-            pushPost({
-                author: "Tristie",
-                content: "> This is a *test* Post @Tristie",
-                gif: 'berd',
-                instance: 'todepond.com'
-            })
-            pushPost({
-                author: "Tristie",
-                content: "test post 2",
-                gif: 'berd',
-                instance: 'todepond.com'
-            })
+            const mockPosts = [
+                {
+                    author: "Tristie",
+                    content: "> **bold** *italics* isn't this super cool hello @JohnLogin **yeah i agree `does this work?`**",
+                    gif: 'berd',
+                    date: new Date(),
+                    instance: 'todepond.com'
+                },
+                {
+                    author: "JohnLogin",
+                    content: "@Tristie @TristieButOther Instance@cute-catgirl.github.io",
+                    gif: 'berd',
+                    date: new Date(),
+                    instance: 'todepond.com'
+                },
+                {
+                    author: "TristieButOther Instance",
+                    content: "@Tristie test post 2 @Tristie @joe @joe @joe @joe",
+                    date: new Date(Date.now()),
+                    gif: 'berd',
+                    instance: 'cute-catgirl.github.io'
+                }
+            ]
+
+            cachedNames = new Set((mockPosts.map(p => p.author)).filter(n => {
+                if (n.includes(' ')) {
+                    cachedNamesWithSpaces.add(n)
+                    return false
+                }
+                return true
+            }))
+
+
+            for (let post of mockPosts) pushPost(post)
 
             return
         }
@@ -125,7 +150,14 @@ description: Login Webview
         }
 
         posts = posts.sort((a, b) => b.date - a.date)
-        nameSet = posts.map(p => p.author)
+
+        cachedNames = new Set((posts.map(p => p.author)).filter(n => {
+            if (n.includes(' ')) {
+                cachedNamesWithSpaces.add(n)
+                return false
+            }
+            return true
+        }))
 
         feed.innerHTML = ''
 
@@ -140,7 +172,7 @@ description: Login Webview
                 instance: post.instance
             })
         }
-        
+
         loader.style.display = "none"
         refresh.disabled = false
     }
@@ -165,163 +197,97 @@ description: Login Webview
         }
 
         post.id = `post-${author}@${instance}`
-        post.querySelector('small>a').innerText = `@${instance}`
-        post.querySelector('small>a').href = instanceConfig?.frontend
-        post.querySelector('time').innerText = getRelativeTime(new Date(+date - 18000000))
-        post.querySelector('time').dateTime = date.toISOString()
-        post.querySelector('time').title = date.toLocaleString()
+
+        const instanceElement = post.querySelector('small>a')
+        instanceElement.innerText = `@${instance}`
+        instanceElement.href = instanceConfig?.frontend
+
+        const timeElement = post.querySelector('time')
+        timeElement.innerText = getRelativeTime(new Date(+date - 18000000))
+        timeElement.dateTime = date.toISOString()
+        timeElement.title = date.toLocaleString()
 
         post.querySelector('span').innerHTML = getHtmlFromMarkdown(content, instance)
         feed.appendChild(post)
 
     }
 
-    // This function was written by TodePond for the original login, and edited by me a little bit
+    function getHtmlFromMarkdown(md, instance) {
 
-    function getHtmlFromMarkdown(markdown, instance) {
-        let html = "";
-        let i = 0;
+        if (md === "please add gifs") return '<img src="https://todepond.com/lab/login/gif.gif">'
 
-        let blockquote = markdown.startsWith('>')
-        if (blockquote) html += "<blockquote>"
+        let blockquote = md.startsWith('> ')
+        let mentionCount = ([...md.matchAll(' @')]).length + md.startsWith('@')
 
-        if (markdown === "please add gifs") return '<img class="nogif" src="https://todepond.com/lab/login/gif.gif">';
+        const possibleMentionRegex = /@(?<username>\w+(?:\s+\w+)*)(?:@(?<domain>[\w.-]+))?/g
+        const possibleMentions = md.matchAll(possibleMentionRegex)
 
-        markdown = markdown
-            .replaceAll("<", "")
-            .replaceAll(">", "")
-            .replaceAll("&", "");
+        // This sanitizes the HTML somehow
+        let html = new Option(blockquote ? md.substring(2) : md).innerHTML
+        if (blockquote) html = '<blockquote>' + html + ' '
 
-        let emphasisingAsterisk = false;
-        let emphasisingUnderscore = false;
-        let bolding = false;
-        let linking = false;
-        let linkTitling = false;
-        let linkTitle = "";
-        let linkPathing = false;
-        let linkPath = "";
-        let coding = false;
+        const matchers = [
+            ['**', 'b'],
+            ['*', 'i'],
+            ['`', 'code']
+        ]
 
-        while (i < markdown.length) {
-            const character = markdown[i];
-            const nextCharacter = markdown[i + 1];
-            const nextTwoCharacters = markdown.slice(i, i + 2);
+        for (let matcher of matchers) {
+            let commit = ''
+            let open = false
 
-            if (coding) {
-                if (character === "`") {
-                    coding = false;
-                    html += "</code>";
-                    i++;
-                    continue;
-                }
-                html += character;
-                i++;
-                continue;
+            for (let sect of html.split(matcher[0])) {
+                if (open) commit += `<${matcher[1]}>${sect}</${matcher[1]}>`
+                else commit += sect
+                open = !open
             }
 
-            if (character === "@") {
-                let found = false;
-                const snippet = markdown.slice(i + 1).split(/\s|\*|_|'|"|!|\.|,|\?/)[0];
-                // first test out all the non-space names
-                let result = "";
-                let foundName = "";
-                for (const name of nameSet) {
-                    if (snippet === name) {
-                        result = `<a href="#post-${name}" class="at-${name} name-${name} at">@${name}</a>`;
-                        // i += name.length + 1;
-                        foundName = name;
-                        found = true;
-                        break;
-                    }
-                }
-
-                // but we should also test out the space names
-                for (const name of nameSet) {
-                    const greedySnippet = markdown.slice(i + 1);
-                    if (
-                        greedySnippet.startsWith(name + " ") ||
-                        greedySnippet === name ||
-                        greedySnippet.startsWith(name + "*") ||
-                        greedySnippet.startsWith(name + "_") ||
-                        greedySnippet.startsWith(name + "'") ||
-                        greedySnippet.startsWith(name + '"') ||
-                        greedySnippet.startsWith(name + "!") ||
-                        greedySnippet.startsWith(name + ".") ||
-                        greedySnippet.startsWith(name + ",") ||
-                        greedySnippet.startsWith(name + "?")
-                    ) {
-                        result = `<a href="#post-${name}" class="at-${name} name-${name} at">@${name}</a>`;
-                        found = true;
-                        foundName = name;
-                        break;
-                    }
-                }
-                if (found) {
-                    html += result;
-                    i += foundName.length + 1;
-                    continue;
-                }
-            }
-
-            if (character === "`") {
-                coding = true;
-                html += "<code>";
-                i++;
-                continue;
-            }
-
-            if (character === "\\") {
-                if (nextCharacter !== undefined) {
-                    html += nextCharacter;
-                }
-                i += 2;
-                continue;
-            }
-
-            if (nextTwoCharacters === "**") {
-                if (bolding) html += "</strong>"
-                else html += "<strong>"
-
-                bolding = !bolding
-                i += 2
-                continue
-            }
-
-            if (character === "*") {
-                if (emphasisingAsterisk) html += "</em>"
-                else html += "<em>"
-
-                emphasisingAsterisk = !emphasisingAsterisk
-                i++
-                continue
-            }
-
-            if (character === "_") {
-                if (emphasisingUnderscore) html += "</em>"
-                else html += "<em>";
-
-                emphasisingUnderscore = !emphasisingUnderscore
-                i++
-                continue
-            }
-
-            html += character
-            i++;
+            if (open) commit += `</${matcher[1]}>`
+            html = commit
         }
 
-        // cleanup
-        if (bolding) html += "</strong>"
-        if (emphasisingAsterisk) html += "</em>"
-        if (emphasisingUnderscore) html += "</em>"
-        if (coding) html += "</code>"
-        if (blockquote) html += "</blockquote>"
+        /*
+        *
+        *   This is all @mentions (help me)
+        *   Could use some reorganization but that is for another day
+        * 
+        */
+
+        a: for (let [mention, mentionInstance] of possibleMentions.map(({ groups }) => [groups?.username, groups?.domain])) {
+
+            if (mentionInstance && !config.instances.find(i => i.name === mentionInstance)) continue
+            if (mention.includes(' ')) {
+                for (let spaceName of cachedNamesWithSpaces) {
+                    let match = mention.match(spaceName)
+                    if (match) {
+                        if (mentionInstance) html = html.replace(`@${match[0]}@${mentionInstance}`, createMention(match[0], mentionInstance, false))
+                        else html = html.replaceAll(`@${match[0]}`, createMention(match[0], instance))
+                        continue a
+                    }
+                }
+                if (cachedNames.has(mention.split(' ')[0])) {
+                    if (mentionInstance) html = html.replaceAll(`@${mention.split(' ')[0]}`, createMention(mention.split(' ')[0], mentionInstance, false))
+                    else html = html.replaceAll(`@${mention.split(' ')[0]}`, createMention(mention.split(' ')[0], instance))
+                }
+
+            }
+
+            if (cachedNames.has(mention)) {
+                if (mentionInstance) html = html.replaceAll(`@${mention}@${mentionInstance}`, createMention(mention, mentionInstance, false))
+                else html = html.replaceAll(`@${mention}`, createMention(mention, instance))
+            }
+        }
+
+        if (blockquote) html += '</blockquote>'
 
         return html
     }
 
-    //
+    function createMention(username, instance, local = true) {
+        return `<a class="instance-${instance} at-${username}" href="#post-${username}@${instance}">@${username}${local ? '' : `@${instance}`}</a>`
+    }
 
-    let units = {
+    const units = {
         year: 24 * 60 * 60 * 1000 * 365,
         month: 24 * 60 * 60 * 1000 * 365 / 12,
         day: 24 * 60 * 60 * 1000,
@@ -330,7 +296,7 @@ description: Login Webview
         second: 1000
     }
 
-    let rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
 
     function getRelativeTime(d1, d2 = new Date()) {
         let elapsed = d1 - d2
@@ -340,10 +306,13 @@ description: Login Webview
                 return rtf.format(Math.round(elapsed / units[u]), u)
     }
 
-
 </script>
 
 <style>
+    html {
+        scroll-behavior: smooth;
+    }
+
     p {
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     }
@@ -376,6 +345,7 @@ description: Login Webview
         display: flex;
         justify-content: space-between;
         align-items: center;
+
         a {
             svg {
                 width: 0.9em;
