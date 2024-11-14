@@ -219,10 +219,8 @@ description: Login Webview
         let blockquote = md.startsWith('> ')
         let mentionCount = ([...md.matchAll(' @')]).length + md.startsWith('@')
 
-        const possibleMentionRegex = /@(?<username>\w+(?:\s+\w+)*)(?:@(?<domain>[\w.-]+))?/g
+        const possibleMentionRegex = /@(?<mention>\w+(?:\s+\w+)*)(?:@(?<mentionInstance>[\w.-]+))?/g
         const possibleMentions = md.matchAll(possibleMentionRegex)
-
-        console.log([...possibleMentions])
 
         // This sanitizes the HTML somehow
         let html = new Option(blockquote ? md.substring(2) : md).innerHTML
@@ -256,7 +254,10 @@ description: Login Webview
         * 
         */
 
-        mentionLoop: for (let [mention, mentionInstance] of (possibleMentions || []).map(({ groups }) => [groups?.username, groups?.domain])) {
+        mentionLoop: for (let match of possibleMentions) {
+
+            const { mention, mentionInstance } = match.groups
+            if (!mention) continue
 
             if (mentionInstance && !config.instances.find(i => i.name === mentionInstance)) continue
             if (mention.includes(' ')) {
