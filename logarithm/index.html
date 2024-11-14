@@ -222,14 +222,10 @@ description: Login Webview
         const possibleMentionRegex = /@(?<username>\w+(?:\s+\w+)*)(?:@(?<domain>[\w.-]+))?/g
         const possibleMentions = md.matchAll(possibleMentionRegex)
 
+        console.log(possibleMentions)
+
         // This sanitizes the HTML somehow
-        // let html = new Option(blockquote ? md.substring(2) : md).innerHTML
-        let html = (blockquote ? md.substring(2) : md)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;')
+        let html = new Option(blockquote ? md.substring(2) : md).innerHTML
 
         if (blockquote) html = '<blockquote>' + html + ' '
 
@@ -260,7 +256,7 @@ description: Login Webview
         * 
         */
 
-        a: for (let [mention, mentionInstance] of possibleMentions.map(({ groups }) => [groups?.username, groups?.domain])) {
+        mentionLoop: for (let [mention, mentionInstance] of possibleMentions?.map(({ groups }) => [groups?.username, groups?.domain]) || []) {
 
             if (mentionInstance && !config.instances.find(i => i.name === mentionInstance)) continue
             if (mention.includes(' ')) {
@@ -269,7 +265,7 @@ description: Login Webview
                     if (match) {
                         if (mentionInstance) html = html.replace(`@${match[0]}@${mentionInstance}`, createMention(match[0], mentionInstance, false))
                         else html = html.replaceAll(`@${match[0]}`, createMention(match[0], instance))
-                        continue a
+                        continue mentionLoop
                     }
                 }
                 if (cachedNames.has(mention.split(' ')[0])) {
