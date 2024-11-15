@@ -21,25 +21,40 @@ description: Login Webview
     <br>
 </p>
 
-<!-- <form>
+<form id="loginForm">
     <label>
-        username
-        <input id="username">
+        Public username
+        <input id="usernameInput">
     </label>
     <label>
-        password
-        <input id="password">
+        Password
+        <input id="passwordInput">
     </label>
 </form>
-<br> -->
 
-<header style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.8em;">
-    <h2 style="padding-bottom: 0;">Feed</h2>
+<!-- <form id="statusForm">
+    <label>
+        <h2>Status</h2>
+        <input placeholder="..." id="statusInput">
+    </label>
     <div>
-        <li id="loader">Loading...</li>
+        <button class="cool-button" type="button">Update status</button>
+        <button class="cool-button" type="button">Update status with GIF</button>
+    </div>
+</form> -->
 
+<br>
+
+<header>
+    <div>
+        <h2 style="padding-bottom: 0;">Feed</h2>
         <button id="refresh" onclick="fetchFeed()">&#x21bb;</button>
     </div>
+
+    <!-- <label>
+        <input type="checkbox" hidden>
+        Auto Refresh (5)
+    </label> -->
 </header>
 
 <hr style="opacity: 0.1;">
@@ -88,7 +103,6 @@ description: Login Webview
 
             // Used for development don't mind this
 
-            loader.style.display = "none"
             refresh.disabled = true
             const mockPosts = [
                 {
@@ -129,21 +143,24 @@ description: Login Webview
         }
 
         refresh.disabled = true
-        loader.style.display = "block"
 
         let posts = []
 
         // Fetch all feeds in parallel using Promise.all
 
-        const instances = await Promise.all(config.instances.map(({ endpoints, name }) => fetch(endpoints.feed).then(res => res.json()).then(feed => ({ name, feed }))))
+        const instances = await Promise.all(config.instances.map(({ endpoints, name }) => fetch(endpoints.feed).then(res => res.json()).catch(() => ([])).then(feed => ({ name, feed }))))
 
         for (let instance of instances) {
+            if (!Array.isArray(instance.feed)) continue
             for (let post of instance.feed) {
-                posts.push({
+
+                if (typeof post[0] ==='string' &&
+                    typeof post[1] === 'string' &&
+                    new Date(post[2]).getTime()) posts.push({
                     content: post[0],
                     author: post[1],
                     date: new Date(post[2]),
-                    gif: post[3],
+                    gif: post[3] || '',
                     instance: instance.name
                 })
             }
@@ -173,7 +190,6 @@ description: Login Webview
             })
         }
 
-        loader.style.display = "none"
         refresh.disabled = false
     }
 
@@ -321,27 +337,121 @@ description: Login Webview
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     }
 
-    button#refresh {
-        font-size: large;
-        background-color: transparent;
-        color: var(--text-color);
-        border: none;
-        cursor: pointer;
-        transition: color linear .1s;
+    button.cool-button {
+        --lighter: oklch(from var(--background) calc(l * 1.25) c h);
+        --darker: oklch(from var(--background) calc(l * 0.75) c h);
 
-        &:hover {
-            color: var(--primary);
+        background-color: transparent;
+        border-style: solid;
+        border-width: .2em .3em .3em .2em;
+        border-color: var(--lighter) var(--darker) var(--darker) var(--lighter);
+        padding: 0.4em;
+        background-color: transparent;
+        font-size: large;
+        color: var(--text-color);
+        cursor: pointer;
+
+        &:active {
+            border-width: .3em .2em .2em .3em;
+            border-color: var(--darker) var(--lighter) var(--lighter) var(--darker);
+
+        }
+    }
+
+    form#loginForm {
+        display: none;
+    }
+
+    form#statusForm {
+        display: flex;
+        align-items: end;
+        gap: 0.2em;
+
+        @media only screen and (max-width: 768px) {
+            flex-direction: column;
+            align-items: start;
         }
 
-        &[disabled],
-        &:disabled {
-            display: none;
+        --lighter: oklch(from var(--background) calc(l * 1.25) c h);
+        --darker: oklch(from var(--background) calc(l * 0.75) c h);
+
+
+        label {
+            width: 100%;
+
+            input {
+                width: 100%;
+                background-color: transparent;
+                font-size: large;
+
+                border-style: solid;
+                border-width: .2em .3em .3em .2em;
+                border-color: var(--lighter) var(--darker) var(--darker) var(--lighter);
+
+                padding: 0.4em;
+                color: var(--text-color);
+            }
+
+            h2 {
+                padding-bottom: 0.2em;
+            }
+        }
+
+        div {
+            display: flex;
+            gap: 0.2em;
+            width: fit-content;
+            flex-shrink: 0;
         }
     }
 
     header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 0.8em;
+
         div {
             display: flex;
+            align-items: center;
+            gap: 0.2em;
+
+            button {
+                display: grid;
+                place-items: center;
+                font-size: large;
+                background-color: transparent;
+                color: var(--text-color);
+                border: none;
+                cursor: pointer;
+                transition: color linear .1s;
+                animation: none;
+                translate: 0 2px;
+
+                &:hover {
+                    color: var(--primary);
+                }
+
+                &[disabled],
+                &:disabled {
+                    animation: turn 0.1s linear forwards infinite;
+                }
+            }
+        }
+
+        label {
+            display: flex;
+            align-items: baseline;
+        }
+    }
+
+    @keyframes turn {
+        from {
+            rotate: 0deg;
+        }
+
+        to {
+            rotate: 360deg;
         }
     }
 
