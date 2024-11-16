@@ -75,7 +75,11 @@ export const config = {
             repository: 'https://github.com/RosyArts/login-redux',
 
             endpoints: {
-                feed: 'https://mittzy-loginredux_getusers.web.val.run'
+                feed: 'https://mittzy-lablogingetusers.web.val.run',
+                update: 'https://mittzy-loginredux_updatestatus.web.val.run',
+                login: 'https://mittzy-loginredux_login.web.val.run',
+                delete: 'https://mittzy-loginredux_deleteaccount.web.val.run',
+                ban: 'https://mittzy-loginredux_banuser.web.val.run',
             }
         },
         {
