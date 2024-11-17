@@ -9,6 +9,22 @@ export default {
 
 export const config = {
     version: '0.0.1',
+
+    // I just made these gifs global since most instances use them anyways
+    gifs: {
+        berd: {
+            src: 'https://www.todepond.com/image/berd.gif',
+            alt: 'A sparkly bird gif'
+        },
+        bot: {
+            src: 'https://www.todepond.com/image/bot.gif',
+            alt: 'A sparkly robot gif'
+        },
+        tode: {
+            src: 'https://www.todepond.com/image/tode.gif',
+            alt: 'A sparkly toad gif'
+        }
+    },
     instances: [
         {
             name: 'todepond.com',
@@ -23,21 +39,6 @@ export const config = {
                 login: 'https://todepond-lablogin.web.val.run',
                 delete: 'https://todepond-lablogindeleteaccount.web.val.run',
                 ban: 'https://todepond-labloginbanuser.web.val.run',
-            },
-
-            gifs: {
-                berd: {
-                    src: 'https://www.todepond.com/image/berd.gif',
-                    alt: 'A sparkly bird gif'
-                },
-                bot: {
-                    src: 'https://www.todepond.com/image/bot.gif',
-                    alt: 'A sparkly robot gif'
-                },
-                tode: {
-                    src: 'https://www.todepond.com/image/tode.gif',
-                    alt: 'A sparkly toad gif'
-                }
             }
         },
         {
@@ -63,7 +64,10 @@ export const config = {
 
             endpoints: {
                 feed: 'https://evol-lablogingetusers.web.val.run',
-                update: 'https://evol-labloginupdatestatus.web.val.run'
+                update: 'https://evol-labloginupdatestatus.web.val.run',
+                login: 'https://evol-lablogin.web.val.run',
+                delete: 'https://evol-labloginbanuser.web.val.run',
+                ban: 'https://evol-labloginbanuser.web.val.run'
             }
 
         },

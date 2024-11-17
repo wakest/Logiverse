@@ -6,7 +6,7 @@ description: Login Webview
 ---
 
 <h1>
-    Welcome to Logarithm
+    <span>Welcome to Logarithm</span>
     <a href="https://github.com/tristie/www/tree/main/logarithm" class="nolink" target="_blank">
         <svg viewBox="0 0 256 250" fill="#fff" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
             <title>Source Code</title>
@@ -23,32 +23,42 @@ description: Login Webview
 
 <form id="loginForm">
     <label>
-        Public username
-        <input id="usernameInput">
+        <b>Public username</b>
+        <input required class="cool-input" id="usernameInput" name="username" placeholder="...">
     </label>
     <label>
-        Password
-        <input id="passwordInput">
+        <b>Password</b>
+        <input required class="cool-input" id="passwordInput" name="password" placeholder="..." type="password">
     </label>
+    <label>
+        <b>Instance</b>
+        <select id="instanceInput" class="cool-select">
+        </select>
+    </label>
+    <button class="cool-button">Login</button>
 </form>
 
-<!-- <form id="statusForm">
+<form id="statusForm">
     <label>
-        <h2>Status</h2>
-        <input placeholder="..." id="statusInput">
+        <h2>Status <small id="whoAmI"></small></h2>
+
+        <input required class="cool-input" placeholder="..." id="statusInput">
     </label>
     <div>
-        <button class="cool-button" type="button">Update status</button>
-        <button class="cool-button" type="button">Update status with GIF</button>
+        <button class="cool-button">Update status</button>
+        <!-- <button class="cool-button" type="button">Update status with GIF</button> -->
+        <button class="cool-button" type="button" onclick="localStorage.removeItem('login');location.reload()">Logout</button>
+        <small style="display: grid;place-items: center;">(gifs soon)</small>
+
     </div>
-</form> -->
+</form>
 
 <br>
 
 <header>
     <div>
         <h2 style="padding-bottom: 0;">Feed</h2>
-        <button id="refresh" onclick="fetchFeed()">&#x21bb;</button>
+        <button id="refresh">&#x21bb;</button>
     </div>
 
     <!-- <label>
@@ -69,7 +79,7 @@ description: Login Webview
         <span style="display: block; padding-block: .2em;">hello</span>
         <img style="display: none;">
         <div>
-            <button onclick="alert('glad you like it babe')">
+            <button onclick="alert('glad you like it babe (!)')">
                 <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g>
                         <path
@@ -88,15 +98,152 @@ description: Login Webview
 
     import { config } from './logiverse.js'
 
-    globalThis.config = config
-    globalThis.fetchFeed = fetchFeed
-    globalThis.devMode = false
+    const devMode = false
+    let DATE_OFFSET = new Date().getTimezoneOffset() * 60000
+    let loggedIn = JSON.parse(localStorage.getItem('login'))
 
     let cachedNames = new Set()
     let cachedNamesWithSpaces = new Set()
 
-    fetchFeed()
+    const units = {
+        year: 24 * 60 * 60 * 1000 * 365,
+        month: 24 * 60 * 60 * 1000 * 365 / 12,
+        day: 24 * 60 * 60 * 1000,
+        hour: 60 * 60 * 1000,
+        minute: 60 * 1000,
+        second: 1000
+    }
 
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+
+    function getRelativeTime(d1, d2 = new Date()) {
+        let elapsed = d1 - d2
+
+        for (var u in units)
+            if (Math.abs(elapsed) > units[u] || u == 'second')
+                return rtf.format(Math.round(elapsed / units[u]), u)
+    }
+
+    if (loggedIn?.username && loggedIn?.password && loggedIn?.instance) {
+
+        await loginUsing({
+            username: loggedIn.username,
+            password: loggedIn?.password,
+            instance: loggedIn?.instance
+        })
+
+    } else {
+
+        statusForm.style.display = 'none'
+        for (let instance of config.instances) {
+            if (!instance.endpoints.login || !instance.endpoints.update) continue
+
+            const instanceOption = document.createElement('option')
+
+            instanceOption.value = instance.name
+            instanceOption.innerText = instance.name
+
+            instanceInput.append(instanceOption)
+        }
+
+        fetchFeed()
+    }
+
+    refresh.addEventListener('click', fetchFeed)
+    loginForm.addEventListener('submit', async event => {
+        event.preventDefault()
+
+        const formData = new FormData(loginForm)
+
+        loginUsing({
+            username: formData.get('username'),
+            password: formData.get('password'),
+            instance: instanceInput.value
+        })
+    })
+    statusForm.addEventListener('submit', event => {
+        event.preventDefault()
+
+        updateStatus({
+            status: statusInput.value,
+            gif: null,
+            username: loggedIn.username,
+            password: loggedIn.password,
+            instance: loggedIn.instance
+        })
+    })
+
+    async function updateStatus({ status, gif, username, password, instance }) {
+        const foundInstance = config.instances.find(({ name }) => name === instance)
+
+        const updateEndpoint = foundInstance.endpoints.update
+
+        if (!updateEndpoint) return alert('instance lacks ability to update status')
+        
+        await fetch(updateEndpoint, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                status,
+                gif,
+                username,
+                password,
+            })
+        })
+
+        await fetchFeed()
+
+    }
+
+    async function loginUsing({ username, password, instance }) {
+        const foundInstance = config.instances.find(({ name }) => name === instance)
+
+        const loginEndpoint = foundInstance.endpoints.login
+
+        if (!loginEndpoint) return
+
+        const res = await fetch(loginEndpoint, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        })
+
+        if (res.status === 401) return alert('wrong password')
+
+        const json = await res.json()
+        if (!Array.isArray(json)) {
+            if ('error' in json) {
+                if (!loggedIn) alert(json.error)
+            } else {
+                if (!loggedIn) alert(json.error)
+            }
+            return localStorage.removeItem('login')
+        }
+
+        statusInput.value = json[3]
+
+        loggedIn = {
+            username,
+            password,
+            instance
+        }
+
+        localStorage.setItem('login', JSON.stringify(loggedIn))
+
+        loginForm.style.display = 'none'
+        statusForm.style.display = 'flex'
+
+        whoAmI.innerText = `You are logged in as ${username}@${instance}`
+        await fetchFeed()
+
+    }
     async function fetchFeed() {
 
         if (globalThis.devMode) {
@@ -153,16 +300,15 @@ description: Login Webview
         for (let instance of instances) {
             if (!Array.isArray(instance.feed)) continue
             for (let post of instance.feed) {
-
-                if (typeof post[0] ==='string' &&
+                if (typeof post[0] === 'string' &&
                     typeof post[1] === 'string' &&
                     new Date(post[2]).getTime()) posts.push({
-                    content: post[0],
-                    author: post[1],
-                    date: new Date(post[2]),
-                    gif: post[3] || '',
-                    instance: instance.name
-                })
+                        content: post[0],
+                        author: post[1],
+                        date: new Date(new Date(post[2]) - DATE_OFFSET),
+                        gif: post[3] || '',
+                        instance: instance.name
+                    })
             }
         }
 
@@ -181,7 +327,7 @@ description: Login Webview
         for (let post of posts) {
 
             // Don't allow posts to be hoisted with a fake date
-            if (new Date(+post.date - 18000000) < new Date()) pushPost({
+            if (post.date < new Date()) pushPost({
                 author: post.author,
                 content: post.content,
                 date: post.date,
@@ -203,10 +349,11 @@ description: Login Webview
         if (gif) {
 
             const image = post.querySelector('img')
+            const foundGif = config.gifs[gif] || instanceConfig && ('gifs' in instanceConfig) && instanceConfig.gifs[gif]
 
-            if (instanceConfig && ('gifs' in instanceConfig) && instanceConfig.gifs[gif]) {
-                image.src = instanceConfig.gifs[gif].src
-                image.alt = instanceConfig.gifs[gif].alt
+            if (foundGif){
+                image.src = foundGif.src
+                image.alt = foundGif.alt
                 image.style.display = 'block'
             }
 
@@ -219,7 +366,7 @@ description: Login Webview
         instanceElement.href = instanceConfig?.frontend
 
         const timeElement = post.querySelector('time')
-        timeElement.innerText = getRelativeTime(new Date(+date - 18000000))
+        timeElement.innerText = getRelativeTime(new Date(date))
         timeElement.dateTime = date.toISOString()
         timeElement.title = date.toLocaleString()
 
@@ -307,28 +454,15 @@ description: Login Webview
         return `<a class="instance-${instance} at-${username}" href="#post-${username}@${instance}">@${username}${local ? '' : `@${instance}`}</a>`
     }
 
-    const units = {
-        year: 24 * 60 * 60 * 1000 * 365,
-        month: 24 * 60 * 60 * 1000 * 365 / 12,
-        day: 24 * 60 * 60 * 1000,
-        hour: 60 * 60 * 1000,
-        minute: 60 * 1000,
-        second: 1000
-    }
-
-    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
-
-    function getRelativeTime(d1, d2 = new Date()) {
-        let elapsed = d1 - d2
-
-        for (var u in units)
-            if (Math.abs(elapsed) > units[u] || u == 'second')
-                return rtf.format(Math.round(elapsed / units[u]), u)
-    }
 
 </script>
 
 <style>
+    :root {
+        --lighter: oklch(from var(--background) calc(l * 1.25) c h);
+        --darker: oklch(from var(--background) calc(l * 0.75) c h);
+    }
+
     html {
         scroll-behavior: smooth;
     }
@@ -338,12 +472,11 @@ description: Login Webview
     }
 
     button.cool-button {
-        --lighter: oklch(from var(--background) calc(l * 1.25) c h);
-        --darker: oklch(from var(--background) calc(l * 0.75) c h);
-
         background-color: transparent;
         border-style: solid;
+        height: fit-content;
         border-width: .2em .3em .3em .2em;
+        width: fit-content;
         border-color: var(--lighter) var(--darker) var(--darker) var(--lighter);
         padding: 0.4em;
         background-color: transparent;
@@ -358,44 +491,56 @@ description: Login Webview
         }
     }
 
+    select.cool-select {
+        width: 100%;
+        background-color: transparent;
+        font-size: large;
+
+        border-style: solid;
+        border-width: .2em .3em .3em .2em;
+        border-color: var(--lighter) var(--darker) var(--darker) var(--lighter);
+
+        padding: 0.4em;
+        color: var(--text-color);
+    }
+
+    label:has(.cool-input) {
+        width: 100%;
+
+        input.cool-input {
+            width: 100%;
+            background-color: var(--darker);
+            font-size: large;
+
+            border-color:transparent;
+            /* border-style: solid; */
+            /* border-color: rgba(from var(--primary) r g b / 0.5); */
+            border-width: .2em .3em .3em .2em;
+            /* border-color: var(--lighter) var(--darker) var(--darker) var(--lighter); */
+
+            padding: 0.4em;
+            color: var(--text-color);
+        }
+
+        h2 {
+            padding-bottom: 0.2em;
+        }
+    }
+
     form#loginForm {
-        display: none;
+        display: flex;
+        gap: 0.2em;
+        align-items: end;
+
+        label:has(.cool-select) {
+            width: 50%;
+        }
     }
 
     form#statusForm {
         display: flex;
-        align-items: end;
-        gap: 0.2em;
-
-        @media only screen and (max-width: 768px) {
-            flex-direction: column;
-            align-items: start;
-        }
-
-        --lighter: oklch(from var(--background) calc(l * 1.25) c h);
-        --darker: oklch(from var(--background) calc(l * 0.75) c h);
-
-
-        label {
-            width: 100%;
-
-            input {
-                width: 100%;
-                background-color: transparent;
-                font-size: large;
-
-                border-style: solid;
-                border-width: .2em .3em .3em .2em;
-                border-color: var(--lighter) var(--darker) var(--darker) var(--lighter);
-
-                padding: 0.4em;
-                color: var(--text-color);
-            }
-
-            h2 {
-                padding-bottom: 0.2em;
-            }
-        }
+        gap: 0.4em;
+        flex-direction: column;
 
         div {
             display: flex;
@@ -403,6 +548,12 @@ description: Login Webview
             width: fit-content;
             flex-shrink: 0;
         }
+    }
+
+    #whoAmI {
+        display: inline-flex;
+        font-size: small;
+        opacity: 0.8;
     }
 
     header {
