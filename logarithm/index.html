@@ -6,7 +6,7 @@ description: Login Webview
 ---
 
 <h1>
-    <span>Welcome to Logarithm</span>
+    Welcome to Logarithm
     <a href="https://github.com/tristie/www/tree/main/logarithm" class="nolink" target="_blank">
         <svg viewBox="0 0 256 250" fill="#fff" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
             <title>Source Code</title>
@@ -47,7 +47,8 @@ description: Login Webview
     <div>
         <button class="cool-button">Update status</button>
         <!-- <button class="cool-button" type="button">Update status with GIF</button> -->
-        <button class="cool-button" type="button" onclick="localStorage.removeItem('login');location.reload()">Logout</button>
+        <button class="cool-button" type="button"
+            onclick="localStorage.removeItem('login');location.reload()">Logout</button>
         <small style="display: grid;place-items: center;">(gifs soon)</small>
 
     </div>
@@ -98,7 +99,8 @@ description: Login Webview
 
     import { config } from './logiverse.js'
 
-    const devMode = false
+    globalThis.devMode = false
+
     let DATE_OFFSET = new Date().getTimezoneOffset() * 60000
     let loggedIn = JSON.parse(localStorage.getItem('login'))
 
@@ -179,7 +181,7 @@ description: Login Webview
         const updateEndpoint = foundInstance.endpoints.update
 
         if (!updateEndpoint) return alert('instance lacks ability to update status')
-        
+
         await fetch(updateEndpoint, {
             method: 'POST',
             headers: {
@@ -246,6 +248,8 @@ description: Login Webview
     }
     async function fetchFeed() {
 
+        let posts = []
+
         if (globalThis.devMode) {
 
             // Used for development don't mind this
@@ -256,71 +260,60 @@ description: Login Webview
                     author: "Tristie",
                     content: "> **bold** *italics* isn't this super cool hello @JohnLogin **yeah i agree `does this work?`**",
                     gif: 'berd',
-                    date: new Date(),
+                    date: new Date(new Date()-DATE_OFFSET),
                     instance: 'todepond.com'
                 },
                 {
                     author: "JohnLogin",
-                    content: "@Tristie @TristieButOther Instance@cute-catgirl.github.io",
+                    content: "@Tristie @TristieButOther Instance💚@cute-catgirl.github.io",
                     gif: 'berd',
-                    date: new Date(),
+                    date: new Date(new Date()-DATE_OFFSET),
                     instance: 'todepond.com'
                 },
                 {
-                    author: "TristieButOther Instance",
+                    author: "TristieButOther Instance💚",
                     content: "@Tristie test post 2 @Tristie @joe @joe @joe @joe",
-                    date: new Date(Date.now()),
+                    date: new Date(new Date()-DATE_OFFSET),
                     gif: 'berd',
                     instance: 'cute-catgirl.github.io'
                 }
             ]
 
-            cachedNames = new Set((mockPosts.map(p => p.author)).filter(n => {
-                if (n.includes(' ')) {
-                    cachedNamesWithSpaces.add(n)
-                    return false
+            cachedNames = new Set(['Tristie', 'JohnLogin'])
+            cachedNamesWithSpaces = new Set(['TristieButOther Instance💚'])
+
+            posts = mockPosts
+
+        } else {
+            refresh.disabled = true
+
+            // Fetch all feeds in parallel using Promise.all
+
+            const instances = await Promise.all(config.instances.map(({ endpoints, name }) => fetch(endpoints.feed).then(res => res.json()).catch(() => ([])).then(feed => ({ name, feed }))))
+
+            for (let instance of instances) {
+                if (!Array.isArray(instance.feed)) continue
+                for (let post of instance.feed) {
+
+                    if (post[1].includes(' ')) cachedNamesWithSpaces.add(post[1])
+                    else cachedNames.add(post[1])
+
+                    if (typeof post[0] === 'string' &&
+                        typeof post[1] === 'string' &&
+                        new Date(post[2]).getTime()) posts.push({
+                            content: post[0],
+                            author: post[1],
+                            date: new Date(new Date(post[2]) - DATE_OFFSET),
+                            gif: post[3] || '',
+                            instance: instance.name
+                        })
                 }
-                return true
-            }))
-
-
-            for (let post of mockPosts) pushPost(post)
-
-            return
-        }
-
-        refresh.disabled = true
-
-        let posts = []
-
-        // Fetch all feeds in parallel using Promise.all
-
-        const instances = await Promise.all(config.instances.map(({ endpoints, name }) => fetch(endpoints.feed).then(res => res.json()).catch(() => ([])).then(feed => ({ name, feed }))))
-
-        for (let instance of instances) {
-            if (!Array.isArray(instance.feed)) continue
-            for (let post of instance.feed) {
-                if (typeof post[0] === 'string' &&
-                    typeof post[1] === 'string' &&
-                    new Date(post[2]).getTime()) posts.push({
-                        content: post[0],
-                        author: post[1],
-                        date: new Date(new Date(post[2]) - DATE_OFFSET),
-                        gif: post[3] || '',
-                        instance: instance.name
-                    })
             }
         }
+
+
 
         posts = posts.sort((a, b) => b.date - a.date)
-
-        cachedNames = new Set((posts.map(p => p.author)).filter(n => {
-            if (n.includes(' ')) {
-                cachedNamesWithSpaces.add(n)
-                return false
-            }
-            return true
-        }))
 
         feed.innerHTML = ''
 
@@ -351,7 +344,7 @@ description: Login Webview
             const image = post.querySelector('img')
             const foundGif = config.gifs[gif] || instanceConfig && ('gifs' in instanceConfig) && instanceConfig.gifs[gif]
 
-            if (foundGif){
+            if (foundGif) {
                 image.src = foundGif.src
                 image.alt = foundGif.alt
                 image.style.display = 'block'
@@ -382,7 +375,8 @@ description: Login Webview
         let blockquote = md.startsWith('> ')
         let mentionCount = ([...md.matchAll(' @')]).length + md.startsWith('@')
 
-        const possibleMentionRegex = /@(?<mention>\w+(?:\s+\w+)*)(?:@(?<mentionInstance>[\w.-]+))?/g
+        // const possibleMentionRegex = /@(?<mention>\w+(?:\s+\w+)*)(?:@(?<mentionInstance>[\w.-]+))?/g
+        const possibleMentionRegex = /@(?<mention>[^@]+)(?:@(?<mentionInstance>[a-z-\.]{1,25}))?/g
         const possibleMentions = md.matchAll(possibleMentionRegex)
 
         // This sanitizes the HTML somehow
@@ -416,7 +410,7 @@ description: Login Webview
         *   Could use some reorganization but that is for another day
         * 
         */
-
+        
         mentionLoop: for (let match of possibleMentions) {
 
             const { mention, mentionInstance } = match.groups
@@ -426,22 +420,22 @@ description: Login Webview
             if (mention.includes(' ')) {
                 for (let spaceName of cachedNamesWithSpaces) {
                     let match = mention.match(spaceName)
-                    if (match) {
+                    if (Array.isArray(match)) {
                         if (mentionInstance) html = html.replace(`@${match[0]}@${mentionInstance}`, createMention(match[0], mentionInstance, false))
-                        else html = html.replaceAll(`@${match[0]}`, createMention(match[0], instance))
+                        else html = html.replace(`@${match[0]}`, createMention(match[0], instance))
                         continue mentionLoop
                     }
                 }
                 if (cachedNames.has(mention.split(' ')[0])) {
-                    if (mentionInstance) html = html.replaceAll(`@${mention.split(' ')[0]}`, createMention(mention.split(' ')[0], mentionInstance, false))
-                    else html = html.replaceAll(`@${mention.split(' ')[0]}`, createMention(mention.split(' ')[0], instance))
+                    if (mentionInstance) html = html.replace(`@${mention.split(' ')[0]}`, createMention(mention.split(' ')[0], mentionInstance, false))
+                    else html = html.replace(`@${mention.split(' ')[0]}`, createMention(mention.split(' ')[0], instance))
                 }
 
             }
 
             if (cachedNames.has(mention)) {
-                if (mentionInstance) html = html.replaceAll(`@${mention}@${mentionInstance}`, createMention(mention, mentionInstance, false))
-                else html = html.replaceAll(`@${mention}`, createMention(mention, instance))
+                if (mentionInstance) html = html.replace(`@${mention}@${mentionInstance}`, createMention(mention, mentionInstance, false))
+                else html = html.replace(`@${mention}`, createMention(mention, instance))
             }
         }
 
@@ -512,7 +506,7 @@ description: Login Webview
             background-color: var(--darker);
             font-size: large;
 
-            border-color:transparent;
+            border-color: transparent;
             /* border-style: solid; */
             /* border-color: rgba(from var(--primary) r g b / 0.5); */
             border-width: .2em .3em .3em .2em;
