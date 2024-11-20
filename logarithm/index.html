@@ -1,6 +1,6 @@
 ---
 
-title: Logarithm
+title: Logarithm Logiverse Webview
 description: Login Webview
 
 ---
@@ -17,7 +17,14 @@ description: Login Webview
 </h1>
 <p>
     Webview of the <a href="https://logiverse.social/" target="_blank">Logiverse</a> that powers
-    <a href="https://todepond.com/lab/login" target="_blank">Login</a> by TodePond
+    <a href="https://todepond.com/lab/login" target="_blank">Login</a> by TodePond.
+    <label>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <title>Open Custom Theme Color Picker</title>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+        </svg>          
+        <input type="color" id="colorPicker" value="#e66465" hidden /> 
+    </label>
     <br>
 </p>
 
@@ -175,6 +182,10 @@ description: Login Webview
         })
     })
 
+    colorPicker.addEventListener('input', () => {
+        document.documentElement.style.cssText = `--background: ${colorPicker.value}`;
+    })
+
     async function updateStatus({ status, gif, username, password, instance }) {
         const foundInstance = config.instances.find(({ name }) => name === instance)
 
@@ -310,8 +321,6 @@ description: Login Webview
                 }
             }
         }
-
-
 
         posts = posts.sort((a, b) => b.date - a.date)
 
@@ -518,6 +527,14 @@ description: Login Webview
 
         h2 {
             padding-bottom: 0.2em;
+        }
+    }
+
+    label:has(input[type="color"]){
+        cursor: pointer;
+        svg {
+            width: 1em;
+            height: 1em;
         }
     }
 
