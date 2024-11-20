@@ -87,11 +87,11 @@ export const config = {
             }
         },
         {
-            name: 'cute-catgirl.github.io',
+            name: 'lodge.maemoon.me',
             admin: 'Mae',
 
-            frontend: 'https://cute-catgirl.github.io/login/',
-            repository: 'https://github.com/cute-catgirl/login',
+            frontend: 'https://lodge.maemoon.me',
+            repository: 'https://github.com/cute-catgirl/lodge',
 
             endpoints: {
                 feed: 'https://maemoon-lablogingetusers.web.val.run',

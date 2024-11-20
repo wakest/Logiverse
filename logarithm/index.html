@@ -183,7 +183,7 @@ description: Login Webview
     })
 
     colorPicker.addEventListener('input', () => {
-        document.documentElement.style.cssText = `--background: ${colorPicker.value}`;
+        document.documentElement.style.cssText = `--primary: ${colorPicker.value}`;
     })
 
     async function updateStatus({ status, gif, username, password, instance }) {
@@ -464,6 +464,8 @@ description: Login Webview
     :root {
         --lighter: oklch(from var(--background) calc(l * 1.25) c h);
         --darker: oklch(from var(--background) calc(l * 0.75) c h);
+
+        --background: hsl(from var(--primary) h calc(s * 1.2) calc(l * 0.35));
     }
 
     html {
