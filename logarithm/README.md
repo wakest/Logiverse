@@ -15,7 +15,5 @@ Long live the tadi web!
 TODO:
 
 - Auto Refresh
-- Mentions
-- Login with other instances and set statuses
 - Standardization
 
