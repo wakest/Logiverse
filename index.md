@@ -7,7 +7,7 @@
 
 # Tristie's Nook
 
-Hi there, my name is Tristie (or just Tris) and I'm a web developer who likes to build random stuff and put it on the internet. Some of my code, including this website, can be found [on Github](https://github.com/Tristie){: target="_blank"}. This website doubles as a long-form [TLOG™](/tlog), however if you are looking for quick statuses, check out [my status.cafe](https://status.cafe/users/tristie){: target="_blank"}. If you are here for the logiverse, check out [Logarithm](/logarithm/).
+Hi there, my name is Tristie (or just Tris) and I'm a web developer who likes to build random stuff and put it on the internet. Some of my code, including this website, can be found [on Github](https://github.com/Tristie){: target="_blank"}. This website doubles as a long-form [TLOG™](/tlog), however if you are looking for quick statuses, check out [my status.cafe](https://status.cafe/users/tristie){: target="_blank"}. If you are here for the Logiverse, check out [Logarithm](/logarithm/).
 
 <p></p>
 
