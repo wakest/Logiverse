@@ -112,7 +112,7 @@ description: Login Webview
 
     let DATE_OFFSET = new Date().getTimezoneOffset() * 60000
     let loggedIn = JSON.parse(localStorage.getItem('login'))
-    let autoRefresh = Boolean(localStorage.getItem('autoRefresh')) ?? true
+    let autoRefresh = localStorage.getItem('autoRefresh') !== 'false'
 
     let cachedNames = new Set()
     let cachedNamesWithSpaces = new Set()
