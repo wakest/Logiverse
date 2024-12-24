@@ -19,11 +19,13 @@ description: Login Webview
     Webview of the <a href="https://logiverse.social/" target="_blank">Logiverse</a> that powers
     <a href="https://todepond.com/lab/login" target="_blank">Login</a> by TodePond.
     <label>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
             <title>Open Custom Theme Color Picker</title>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
-        </svg>          
-        <input type="color" id="colorPicker" value="#e66465" hidden /> 
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+        </svg>
+        <input type="color" id="colorPicker" value="#e66465" hidden />
     </label>
     <br>
 </p>
@@ -69,10 +71,10 @@ description: Login Webview
         <button id="refresh">&#x21bb;</button>
     </div>
 
-    <!-- <label>
-        <input type="checkbox" hidden>
-        Auto Refresh (5)
-    </label> -->
+    <label>
+        <input id="autoRefreshEnabled" type="checkbox" hidden>
+        Auto Refresh (<span id="autoRefreshCounter">5</span>)
+    </label>
 </header>
 
 <hr style="opacity: 0.1;">
@@ -110,6 +112,7 @@ description: Login Webview
 
     let DATE_OFFSET = new Date().getTimezoneOffset() * 60000
     let loggedIn = JSON.parse(localStorage.getItem('login'))
+    let autoRefresh = Boolean(localStorage.getItem('autoRefresh')) ?? true
 
     let cachedNames = new Set()
     let cachedNamesWithSpaces = new Set()
@@ -157,6 +160,36 @@ description: Login Webview
 
         fetchFeed()
     }
+
+    let autoRefreshInterval
+
+    if (autoRefresh) startAutoRefresh()
+    else autoRefreshCounter.innerText = 'paused'
+
+    autoRefreshEnabled.checked = autoRefresh
+    
+    function startAutoRefresh() {
+        let autoRefreshCount = 5
+        autoRefreshCounter.innerText = autoRefreshCount
+        autoRefreshInterval = setInterval(() => {
+            if (!autoRefreshCount) {
+                fetchFeed()
+                autoRefreshCount = 5
+            } else {
+                autoRefreshCount--
+            }
+            autoRefreshCounter.innerText = autoRefreshCount || 'refreshing...'
+        }, 1000)
+    }
+
+    autoRefreshEnabled.addEventListener('change', event => {
+        localStorage.setItem('autoRefresh', event.target.checked)
+        if (event.target.checked) startAutoRefresh()
+        else {
+            clearInterval(autoRefreshInterval)
+            autoRefreshCounter.innerText = 'paused'
+        }
+    })
 
     refresh.addEventListener('click', fetchFeed)
     loginForm.addEventListener('submit', async event => {
@@ -271,20 +304,20 @@ description: Login Webview
                     author: "Tristie",
                     content: "> **bold** *italics* isn't this super cool hello @JohnLogin **yeah i agree `does this work?`**",
                     gif: 'berd',
-                    date: new Date(new Date()-DATE_OFFSET),
+                    date: new Date(new Date() - DATE_OFFSET),
                     instance: 'todepond.com'
                 },
                 {
                     author: "JohnLogin",
                     content: "@Tristie @TristieButOther Instance💚@cute-catgirl.github.io",
                     gif: 'berd',
-                    date: new Date(new Date()-DATE_OFFSET),
+                    date: new Date(new Date() - DATE_OFFSET),
                     instance: 'todepond.com'
                 },
                 {
                     author: "TristieButOther Instance💚",
                     content: "@Tristie test post 2 @Tristie @joe @joe @joe @joe",
-                    date: new Date(new Date()-DATE_OFFSET),
+                    date: new Date(new Date() - DATE_OFFSET),
                     gif: 'berd',
                     instance: 'cute-catgirl.github.io'
                 }
@@ -419,7 +452,7 @@ description: Login Webview
         *   Could use some reorganization but that is for another day
         * 
         */
-        
+
         mentionLoop: for (let match of possibleMentions) {
 
             const { mention, mentionInstance } = match.groups
@@ -532,8 +565,9 @@ description: Login Webview
         }
     }
 
-    label:has(input[type="color"]){
+    label:has(input[type="color"]) {
         cursor: pointer;
+
         svg {
             width: 1em;
             height: 1em;
@@ -611,6 +645,7 @@ description: Login Webview
         label {
             display: flex;
             align-items: baseline;
+            cursor: pointer;
         }
     }
 
