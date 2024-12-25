@@ -136,6 +136,11 @@ description: Login Webview
                 return rtf.format(Math.round(elapsed / units[u]), u)
     }
 
+    if (localStorage.getItem('color')) {
+        document.documentElement.style.cssText = `--primary: ${localStorage.getItem('color')}`
+        document.getElementById('colorPicker').value = localStorage.getItem('color')
+    }
+
     if (loggedIn?.username && loggedIn?.password && loggedIn?.instance) {
 
         await loginUsing({
@@ -216,7 +221,8 @@ description: Login Webview
     })
 
     colorPicker.addEventListener('input', () => {
-        document.documentElement.style.cssText = `--primary: ${colorPicker.value}`;
+        document.documentElement.style.cssText = `--primary: ${colorPicker.value}`
+        localStorage.setItem('color', colorPicker.value)
     })
 
     async function updateStatus({ status, gif, username, password, instance }) {
