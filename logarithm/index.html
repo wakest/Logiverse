@@ -177,7 +177,7 @@ description: Login Webview
 
 
     if (autoRefresh) startAutoRefresh()
-    else autoRefreshCounter.innerText = '🛑'
+    else autoRefreshCounter.innerText = 'paused'
 
     autoRefreshEnabled.checked = autoRefresh
 
@@ -200,7 +200,7 @@ description: Login Webview
         if (event.target.checked) startAutoRefresh()
         else {
             clearInterval(autoRefreshInterval)
-            autoRefreshCounter.innerText = '🛑'
+            autoRefreshCounter.innerText = 'paused'
         }
     })
 
