@@ -14,6 +14,5 @@ Long live the tadi web!
 
 TODO:
 
-- Auto Refresh
 - Standardization
 
