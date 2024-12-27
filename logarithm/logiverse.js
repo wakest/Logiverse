@@ -4,7 +4,7 @@ export default {
     frontend: 'https://tristie.org/logarithm',
     repository: 'https://github.com/tristie/www/tree/main/logarithm',
 
-    endpoints: {}
+    endpoints: null
 }
 
 export const config = {
@@ -49,11 +49,11 @@ export const config = {
             repository: 'https://github.com/Svenlaa/svenlaa.com/tree/main/playground/loggo',
 
             endpoints: {
-                feed: "https://svenlaa-lablogingetusers.web.val.run",
-                update: 'https://svenlaa-labloginupdatestatus.web.val.run',
-                login: 'https://svenlaa-lablogin.web.val.run',
-                delete: 'https://svenlaa-lablogindeleteaccount.web.val.run',
-                ban: 'https://svenlaa-labloginbanuser.web.val.run'
+                feed: 'https://api.svenlaa.com/logiverse/logs',
+                update: 'https://api.svenlaa.com/logiverse/update',
+                login: 'https://api.svenlaa.com/logiverse/login',
+                delete: 'https://api.svenlaa.com/logiverse/delete',
+                ban: 'https://api.svenlaa.com/logiverse/ban',
             }
         },
         {
